@@ -14,9 +14,7 @@
       [(begin)  (eprogn (cdr e) env)]
       [(set!)   (update! (cadr e) env (evaluate (caddr e) env))]
       [(lambda) (make-function (cadr e) (cddr e) env)]
-      [else     (displayln (car e))
-                (displayln (cdr e))
-                (invoke (evaluate (car e) env)
+      [else     (invoke (evaluate (car e) env)
                         (evlis (cdr e) env))]
       )))
 
@@ -27,7 +25,6 @@
 
 
 (define (extend env variables values)
-  (display values)
   (cond [(pair? variables)
          (if (pair? values)
            (cons (mcons (car variables) (car values))
@@ -57,8 +54,8 @@
 
 (define (evlis exps env)
   (if (pair? exps)
-    (cons (evaluate (car exps))
-          (evlis (cdr exps env)))
+    (cons (evaluate (car exps) env)
+          (evlis (cdr exps) env))
     '()))
 
 
@@ -67,8 +64,8 @@
 
 (define (lookup id env)
   (if (pair? env)
-    (if (eq? (caar env) id)
-      (cdar env)
+    (if (eq? (mcar (car env)) id)
+      (mcdr (car env))
       (lookup id (cdr env)))
     (error "No such binding" id)))
 
